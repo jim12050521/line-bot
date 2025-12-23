@@ -1,4 +1,4 @@
-flask
-line-bot-sdk
-google-generativeai
-gunicorn
+flask>=2.3.2
+line-bot-sdk>=2.2.0
+google-generativeai>=0.8.6
+gunicorn>=20.2.0
