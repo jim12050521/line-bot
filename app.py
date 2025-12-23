@@ -57,7 +57,7 @@ def handle_message(event):
         response = model.generate_content(user_text)
         reply_text = response.text
     except Exception as e:
-        reply_text = "⚠️ Gemini 發生錯誤，請稍後再試"
+        reply_text = "⚠️ Gemini 發生錯誤，請稍後再試: e"
 
     line_bot_api.reply_message(
         event.reply_token,
@@ -70,3 +70,4 @@ def handle_message(event):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     app.run(host="0.0.0.0", port=port)
+
