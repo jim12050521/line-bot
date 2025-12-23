@@ -9,7 +9,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import google.generativeai as genai
 
 # ===============================
-# Logging（Render 會收）
+# Logging
 # ===============================
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -34,8 +34,10 @@ handler = WebhookHandler(CHANNEL_SECRET)
 # Gemini
 # ===============================
 genai.configure(api_key=GEMINI_API_KEY)
+
+# 使用最新的可用模型
 model = genai.GenerativeModel(
-    "gemini-1.5-flash",
+    "models/gemini-flash-latest",
     generation_config={
         "temperature": 0.7,
         "max_output_tokens": 512,
@@ -77,14 +79,13 @@ def handle_message(event):
     try:
         response = model.generate_content(
             user_text,
-            request_options={"timeout": 8}  # 防止卡死
+            request_options={"timeout": 15}  # 適度延長 timeout
         )
-
         reply_text = response.text or "（沒有回應）"
 
     except Exception as e:
         # 記錄錯誤，但不洩漏給使用者
-        logger.exception("Gemini API error")
+        logger.exception(f"Gemini API error: {e}")
         reply_text = "⚠️ 系統忙碌中，請稍後再試"
 
     try:
@@ -92,8 +93,8 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=reply_text)
         )
-    except Exception:
-        logger.exception("LINE reply failed")
+    except Exception as e:
+        logger.exception(f"LINE reply failed: {e}")
 
 # ===============================
 # Render / Gunicorn
